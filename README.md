@@ -5,6 +5,8 @@
 
 ### Norm Matloff, Prof. of Computer Science, UC Davis; [my bio](http://heather.cs.ucdavis.edu/matloff.html)
 
+(See notice at the end of this document regarding copyright.)
+
 The site is for those who know nothing of R, or maybe even nothing of
 programming, and seek *QUICK*, painless entree to the world of R.
 
@@ -27,21 +29,20 @@ conversational, story-telling manner.
 learning R *and* learning an IDE at the same time, a distraction from
 the goal of becoming productive in R as fast as possible.  
 
-     Note that
-even the excellent course by [R-Ladies
+     Note that even the excellent course by [R-Ladies
 Sydney](https://threadreaderapp.com/thread/1119025557830684673.html),
-which does start with RStudio,  laments that RStudio can be
-"overwhelming."  Here we stick to the R command line, and focus on data
-analysis, not tools such as IDEs, which we will cover as an 
-advanced topic.  (Some readers of this tutorial may already be using RStudio or 
-an external editor, and the treatment here will include 
-special instructions for
-them when needed.)
+which does start with RStudio, laments that **RStudio can be
+"overwhelming."**  Here we stick to the R command line, and focus on data
+analysis, not tools such as IDEs, which we will cover as an advanced
+topic.  (Some readers of this tutorial may already be using RStudio or
+an external editor, and the treatment here will include special
+instructions for them when needed.)
 
     - Coverage is mainly limited to base R. So for instance the 
 popular but self-described "opinionated" Tidyverse is not 
 treated, partly due to its controversial nature (I am a 
-skeptic), but again mainly because it would be a burden on the user
+[skeptic](http://github.com/matloff/TidyverseSkeptic)),
+but again mainly because it would be a burden on the user
 to learn both base R and the Tidyverse at the same time.
 
 * **Nonpassive approach:**  Passive learning, just watching the screen, is NO
@@ -79,6 +80,10 @@ you should cook up your own variants to try.
 * [Lesson 23: Simple Text Processing, I](#txt)
 * [Lesson 24: Simple Text Processing, II](#txt1)
 * [Lesson 25: Linear Regression Analysis, II](#linreg2)
+* [Lesson 26: Working with the R Date Class](#dates)
+* [Lesson 27: Tips on R Coding Style and Strategy](#style)
+* [Lesson 28: The Logistic Model](#logit)
+* [Lesson 29: Files and Directories](#fd)
 * (more lessons coming soon!)
 * [To Learn More](#forMore)
 
@@ -431,7 +436,7 @@ make a copy with a shorter name.
 
 Dollar signs are used to denote the individual columns.  E.g. we can
 print out the mean tooth length; **tg$len** is the tooth length column
-(the dollar sign is the deliminter, separating 'tg' and 'len'), so
+(the dollar sign is the delimiter, separating 'tg' and 'len'), so
 
 ``` r
 > mean(tg$len)
@@ -651,10 +656,10 @@ what we put into that variable.)
 
 ## <a name="tapply"> </a> Lesson 5:  The tapply Function
 
-<span style="color:red">Tip:</span>
-Often in R there is a shorter, more compact way of doing things.  That's 
-the case here; we can use the magical **tapply** 
-function in the above example.
+<span style="color:red">Tip:</span> Often in R there is a shorter, more
+compact way of doing things.  That's the case here; we can use the
+magical **tapply** function in the above example.  In fact, we can do it
+in just one line.
 
 ``` r
 > tapply(tg$len,tg$supp,mean)
@@ -662,10 +667,10 @@ function in the above example.
 20.66333 16.96333 
 ```
 
-In English:  "Split **tg$len** into two groups, according to the value
-of **tg$supp**, then apply **mean** to each group."  Note that the
-result was returned as a vector, which we could save by assigning it to,
-say **z**:
+In English:  "Split the vector **tg$len** into two groups, according to
+the value of **tg$supp**, then apply **mean** to each group."  Note that
+the result was returned as a vector, which we could save by assigning it
+to, say **z**:
 
 ``` r
 > z <- tapply(tg$len,tg$supp,mean)
@@ -688,8 +693,10 @@ artificial example:
 > g <- c('M',"F",'M','M')
 ```
 
-Suppose **x** ages of some kids, who are a boy, a girl, then two more
-boys, as indicated in **g**.  Let's call **tapply**:
+Suppose **x** is the ages of some kids, who are a boy, a girl, then two more
+boys, as indicated in **g**.  For instance, the 5-year-old is a girl.
+
+Let's call **tapply**:
 
 ``` r
 > tapply(x,g,mean)
@@ -703,7 +710,7 @@ corresponding elements of **g**, and then find the mean in each pile.
 Note that it is no accident that **x** and **g** had the same number of
 elements above, 4 each.  If on the contrary, **g** had 5 elements, that
 fifth element would be useless -- the gender of a nonexistent fifth
-child age in **x**.  Similarly, it wouldn't be right if **g** had had
+child's age in **x**.  Similarly, it wouldn't be right if **g** had had
 only 3 elements, apparently leaving the fourth child without a specified
 gender.
 
@@ -778,7 +785,7 @@ frame:
 ```
 
 As with everything else, **row.names** is a function, and as you can see
-above, its return value is a 32-element vector.  The elements of that
+above, its return value here is a 32-element vector.  The elements of that
 vector are of type **character**.
 
 You can even assign to that vector:
@@ -800,11 +807,12 @@ actually common in R.  It stems from the fact that '<-' is actually a
 function!  But this is not the place to go into that.)
 
 > **Your Turn:**  Try some experiments with the **mtcars** data, e.g.
-> finding the mean MPG for 6-cylinder cars.
+> finding the mean horsepower for 6-cylinder cars.
 
 <span style="color:red">Tip:</span>
 As a beginner (and for that matter later on), you should NOT be obsessed
-with always writing code in the "optimal" way.  It's much more important
+with always writing code in the "optimal" way, including in terms of
+compactness of the code.  It's much more important
 to write something that works and is clear; one can always tweak it
 later.  In this case, though, **tapply** actually aids clarity, and it
 is so ubiquitously useful that we have introduced it early in this
@@ -1526,7 +1534,10 @@ placeholders.  For example, in
 
 we said, "R, please execute **mgd** with **Nile** playing the role of
 ***x***, and 1200 playing the role of ***d***.  (Here **Nile** and 1200 are
-known as the *actual* arguments.)
+known as the *actual* arguments.)  
+
+As with variables, we can pretty much name functions and their arguments
+as we please.
 
 As you have seen with R's built-in functions, a function will typically
 have a return value.  In our case here, we could arrange that by writing
@@ -1535,8 +1546,8 @@ have a return value.  In our case here, we could arrange that by writing
 > mgd <- function(x,d) return(mean(x[x > d]))
 ```
 
-But it's not needed, because in any function, R will return the last
-value computed, in this case the requested mean.
+But it's not needed here, because in any function, R will return the
+last value computed, in this case the requested mean.
 
 
 And we can save the function for later use, by using R's **save**
@@ -1557,11 +1568,28 @@ run
 
 and then **mgd** will be restored, ready for us to use again.
 
-> **Your Turn:**  Try your hand at writing some simple functions along the
-> lines seen here.  You might start with a function **n0(x)**, that returns
-> the number of 0s in the vector ***x***.  Another suggestion would be a
-> function **hld(x,d)**, which draws a histogram for those elements in the
-> vector ***x*** that are less than ***d***.
+Let's write another function, this one to find the range of a vector,
+i.e. the difference between the minimal and maximal values:
+
+``` r
+> rng <- function(y) max(y) - min(y)
+> rng(Nile)
+[1] 914
+```
+
+Here we made use of the built-in R functions **max** and **min**.
+Again, the last item computed is the subtraction, so it will be
+automatically returned, just what we want.  As before, I chose to name
+the argument **y**, but it could be anything.  However, I did not name
+the function 'range', as there is already a built-in R function of that
+name.
+
+> **Your Turn:**  Try your hand at writing some simple functions along
+> the lines seen here.  You might start by writing a function **n0(x)**,
+> that returns the number of 0s in the vector ***x***.  (Hint:  Make use
+> of R's **==** and **sum**.) Another suggestion would be a function
+> **hld(x,d)**, which draws a histogram for those elements in the vector
+> ***x*** that are less than ***d***.
 
 Functions are R objects, just as are vectors, lists and so on.  Thus, we
 can print them by just typing their names!
@@ -1815,7 +1843,7 @@ Since we had three statements in the body of the function, rather than
 one as in our previous examples, we needed to write them as a block.
 
 Here the formal argument **d** is the data frame to be worked on, and
-**cols** specifiees the columns in which 0s are to be replaced.
+**cols** specifies the columns in which 0s are to be replaced.
 
 We could use this in the Pima data"
 
@@ -1844,7 +1872,7 @@ educational attainment level below college, but this dataset was
 extracted from the general data.)  13 means a bachelor's degree.
 
 Suppose we wish to color-code the wage-age graph by educational
-attainment, and amalgamate all codes under 13, giving them the code 12.
+attainment. Let's amalgamate all codes under 13, giving them the code 12.
 
 The straightforward but overly complicated, potentially slower way would
 be this:
@@ -1859,8 +1887,8 @@ be this:
  [1] 13 12 12 12 12 12 12 12 14 12 12 13 12 13 12
 ```
 
-For pedagogical clarity, I've inserted "before and after" code, to show
-the **educ** did indeed change where it should.
+For pedagogical clarity, I've inserted "before and after" code, using
+**head**, to show the **educ** did indeed change where it should.
 
 The **if** statement works pretty much like the word "if" in English.
 First **i** will be set to 1 in the loop, so R will test whether
@@ -1915,7 +1943,7 @@ Vectorized code is typically much more compact than loop-based code, as
 was the case here.  In some cases, though certainly not all, the
 vectorized version will be much faster.
 
-By the way, noe the remark above, "**ifelse** operates on vectors."
+By the way, note the remark above, "**ifelse** operates on vectors."
 Apply that to
 
 ``` r
@@ -1935,6 +1963,8 @@ coming lessons.
 > **Your Turn:** Recode the **Nile** data to a new vector **nile**, with
 > the values 1, 2 and 3, according to whether the corresponding number in
 > **Nile** is less than 800, between 800 and 1150, or greater than 1150.
+> You'll probably want to do this using two separate calls to
+> **ifelse**.
 
 ## <a name="keepfit"> </a> Lesson 16: Do Professional Athletes Keep Fit?
 
@@ -1967,6 +1997,8 @@ Now, as a first try in assessing the question of weight gain over time,
 let's look at the mean weight for each age group.  In order to have
 groups, we'll round the ages to the nearest integer first, using the R
 function, **round**, so that e.g.  21.8 becomes 22 and 35.1 becomes 35.
+
+Let's explore the data using R's **table** function.
 
 ``` r
 > age <- round(mlb$Age)
@@ -2011,8 +2043,8 @@ baseball players, past, present and future.)  That said, it does seem
 there is a slight upward trend; older players tend to be heavier!
 
 By the way, note that **taout** is vector, but with additional
-information, in that the elements have names.  In fact, we can extract
-the names into its own vector if needed:
+information, in that the elements have names, in this case the ages.  In
+fact, we can extract the names into its own vector if needed:
 
 ``` r
 > names(taout)
@@ -2021,23 +2053,23 @@ the names into its own vector if needed:
 [16] "36" "37" "38" "39" "40" "41" "42" "43" "44" "49"
 ```
 
-Let's plot it.  We'll just plot the means that are based on larger
-amounts of data.  So we'll restrict it to, say, ages 23 through 35,
-all of whose means were based on at least 30 players.
+Let's plot the means against age.  We'll just plot the means that are
+based on larger amounts of data.  So we'll restrict it to, say, ages 23
+through 35, all of whose means were based on at least 30 players.
 
 ``` r
 > plot(23:35,taout[3:15])
 ```
 
-![alt text](https://raw.githubusercontent.com/matloff/fasteR/master/inst/images/MLB.png)
+!gainst[alt text](https://raw.githubusercontent.com/matloff/fasteR/master/inst/images/MLB.png)
 
 There does indeed seem to be an upward trend in time.  Ballplayers
 should be more careful!
 
 Note again that the **plot** function noticed that we supplied it with
-two arguments instead of one, and thus drew a scatter plot.  For
-instance, in **taout** we see that for age group 25, the mean weight
-was 200.2427, so there is a dot in the graph for the point
+two arguments instead of one, and thus drew a two-dimensional scatter
+plot.  For instance, in **taout** we see that for age group 25, the mean
+weight was 200.2427, so there is a dot in the graph for the point
 (25,200.2427).
 
 > **Your Turn:** There are lots of little experiments you can do on this
@@ -2058,13 +2090,20 @@ but it will be helpful to at least get a good definition set:
 
 > As mentioned, we treat the data as a sample from the (conceptual)
 > population of all players, past, present and future.  Accordingly,
-> there is a population mean for each age group.  It is assumed that
-> those population means, when plotted against age, lie on some straight
-> line.
+> there is a population mean weight for each age group.  It is assumed
+> that those population means, when plotted against age, lie on some
+> straight line.
+
+In other words, our model is 
+
+mean weight = &beta;<sub>0</sub> + &beta;<sub>1</sub> height
+
+where &beta;<sub>0</sub> and &beta;<sub>1</sub> are the 
+intercept and slope of the population regression line.
 
 So, we need to use the data to estimate the slope and intercept of that
 straight line, which R's **lm** ("linear model") function does for us.
-We'll use the original dataset, since the one with rounded ages was jut
+We'll use the original dataset, since the one with rounded ages was just
 to guide our intuition.
 
 ``` r
@@ -2091,9 +2130,9 @@ line, superimposed on our scatter plot:
 
 ![alt text](https://raw.githubusercontent.com/matloff/fasteR/master/inst/images/Add_abline.png)
 
-> **Your Turn:** In the **mtcars** data, fit a linear model regression MPG
-> against horsepower and weight; what is the estimated effect of 100
-> pounds of extra weight, for fixed horespower?
+> **Your Turn:** In the **mtcars** data, fit a linear model of the
+> regression of MPG against weight; what is the estimated
+> effect of 100 pounds of extra weight?
 
 ## <a name="s3"> </a> Lesson 18: S3 classes
 
@@ -2139,9 +2178,11 @@ output.  But a couple of things stand out even in this excerpt:
 
 1. An S3 object is actually an R list.
 
-2. But it has an extra *attribute*, which is the class name.
+2. But it has an extra *attribute*, which is the class name, in this
+   case **'lm'**.  (So the designers of R simply chose to name the class
+after the function, which is not always the case.)
 
-3. One of the components of the list is named **coefficients**, and it
+3. One of the components of this list is named **coefficients**, and it
    is a vector containing the slope and intercept.
 
 So, we don't have to type the slope and intercept in by hand after all.
@@ -2156,9 +2197,11 @@ as they age?  The answer appears to be yes; for each additional year of
 age, the estimated mean age increases by about 0.7 pound.  That's about
 7 pounds in 10 years, rather remarkable.
 
-Again, this is only an estimate, generated from sample data.  We can get
-an idea of the accuracy of this estimate by calculating a *confidence
-interval*, but we'll leave that for a future lesson.
+Again, this is only an estimate -- 181.437 and 0.694 are estimates of
+the unknown population values &beta;<sub>0</sub> and &beta;<sub>1</sub>.
+-- generated from sample data.  We can get an idea of the accuracy of
+this estimate by calculating a *confidence interval*, but we'll leave
+that for statistics courses.
 
 But we can do more right now.  One might ask, Shouldn't we also account
 for a player's height, not just his age?  After all, taller people tend
@@ -2177,15 +2220,18 @@ Coefficients:
 ```
 
 Here we instruct R to find the estimated regression function of weight,
-using height and age as predictors.  The '+' doesn't mean addition; it
-is simply a delimiter between the predictions in our regression
+using both height and age as predictors.  The '+' doesn't mean addition; it
+is simply a delimiter between the predictors height and age in our regression
 specification.
+
+So the new model is 
+
+mean weight = &beta;<sub>0</sub> + &beta;<sub>1</sub> height  + &beta;<sub>2</sub> age
+
 
 This says:
 
-<pre>
-estimated mean weight = -187.6382 + 4.9236 height + 0.9115 age
-</pre>
+    estimated mean weight = -187.6382 + 4.9236 height + 0.9115 age
 
 So, under this more refined analysis, things are even more pessimistic;
 players on average gain about 0.9 pounds per year.  And by the way, an
@@ -2204,6 +2250,10 @@ careers.  If we do *not* include height in our model, that omission
 might bias the age coefficient downward.  Thus great care must be taken
 in interpreting coefficients in the Description setting.  For
 Prediction, it is not much of an issue.
+
+> **Your Turn:** In the **mtcars** data, fit a linear model of the
+> regression of MPG against weight and horsepower; what is the estimated
+> effect of 100 pounds of extra weight, for fixed horsepower?
 
 ## <a name="less15"> </a> Lesson 19: Baseball Player Analysis (cont'd.)
 
@@ -2230,17 +2280,8 @@ is easily done using the **split** function, but that doesn't work,
 since that function is for splitting vectors.  Here we wish to split a
 data frame.
 
-So what can be done instead?  Recall the statement at the outset of this
-tutorial:
-
-> I cannot *teach* you how to program.  I can merely
-> give you the tools, e.g. R vectors, and some examples.  For a given
-> desired programming task, then, you must creatively put these tools
-> together to attain the goal.  Treat it like a puzzle!  I think you'll
-> find that if you stick with it, you'll find you're pretty good at it.
-> After all, we can all work puzzles.
-
-So we need to think creatively here.  One solution is this:
+So what can be done instead?  We need to think creatively here.  One
+solution is this:
 
 We need to determine the row numbers of the catchers, the row numbers of
 the infielders and so on.  So we can take all the row numbers,
@@ -2309,7 +2350,8 @@ We'll start with an empty frame, and keep adding rows to it.
 > posNames <- c('Catcher','Infielder','Outfielder','Pitcher')
 > m <- data.frame()
 > for (pos in posNames) {
-+   lmo <- lm(Weight ~ Age, data = mlb[rownums[[pos]],])
++   posRows <- rownums[[pos]]
++   lmo <- lm(Weight ~ Age, data = mlb[posRows,])
 +   newrow <- lmo$coefficients
 +   m <- rbind(m,newrow)
 + }
@@ -2323,14 +2365,28 @@ We'll start with an empty frame, and keep adding rows to it.
 
 Some key things to note here.  
 
-1.  In the call to **lm**, we used **mlb[rownums[[pos]],]** instead of
-**mlb** as previously, since here we wanted to fit a regression line
-on each subgroup.  So, we restricted attention to only those rows of
-**mlb**.
+*  The overall strategy is to start with an empty data frame, then keep
+   adding rows to it, one row per playing position.
 
-2.  We used R's **rbind** ("row bind") function.  The expression 
-**rbind(m,newrow)** forms a new data frame, by adding **newrow** onto
-**m**.  Here we reassign the result back to **m**, a common operation.
+*  In order to add rows to **m**, we used R's **rbind** ("row bind")
+   function.  The expression **rbind(m,newrow)** forms a new data frame,
+by tacking **newrow** onto **m**.  Here we reassign the result back to
+**m**, also a common operation.
+   
+*  In the call to **lm**, we used **mlb[rownums[[pos]],]** instead of
+   **mlb** as previously, since here we wanted to fit a regression line
+on each position subgroup.  So, we restricted attention to only those
+rows of **mlb**.
+
+So, what happens is:  **m** is initially an empty data frame.  Then the
+loop, for its first iteration, sets **pos** to 'Catcher'.  Then a line
+will be fit to the rows of **mlb** that are for catchers.  That line is
+returned to us from **lm**, and we assign it to **lmo**.  (Once again,
+the name is arbitrary; I chose this one to symbolize "lm output.")  We
+extract the coefficients and tack them on at the end of **m**.
+
+<span style="color:red">Tip:</span> This is a very common *design
+pattern* in R (and most other languages)
 
 Nice output, with the two columns aligned.  But those column names are
 awful, and the row labels should be nicer than 1,2,3,4.  We can fix
@@ -2347,11 +2403,11 @@ Outfielder  176.2884 0.7883343
 Pitcher     185.5994 0.6543904
 ```
 
-What happened here?  We earlier saw the built-in **row.names**
-function, so that setting row names was easy.  But what about the column
-names?  Recall that a data frame is actually an R list, consisting of
-several vectors of the same length.  We have two vectors here, so we
-need to supply two items to **names**.
+What happened here?  We earlier saw the built-in **row.names** function,
+so that setting row names was easy.  But what about the column names?
+Recall that a data frame is actually an R list, consisting of several
+vectors of the same length, which form the columns.  So, **names(m)** is
+the names of the columns.
 
 So with a little finessing here, we got some nicely-formatted output.
 Moreover, we now have our results in a data frame for further use.  For
@@ -2389,6 +2445,10 @@ mkdir ~/R
 
 in a terminal window.
 
+Note:  The term *directory* is, as you can see above, synonymous with
+*folder* on Mac/Windows systems.  Actually, both of those OSs used to
+use this term too.  R retains that terminology.
+
 When you want to use one of your installed packages, you need to tell R
 to load it, e.g. by typing at the R prompt,
 
@@ -2410,7 +2470,7 @@ whenever I start R.
 You'll need to install the package from CRAN, by typing
 
 ``` r
-> install.packages('ggplot2', lib='~)
+> install.packages('ggplot2', lib='~/R')
 ```
 
 You'll be prompted to supply the location of the library
@@ -2441,6 +2501,9 @@ the point size while we are at it):
 ``` r
 > with(mlb,plot(Age,Weight,col=PosCategory,cex=0.6))
 ```
+
+By writing **with**, we tell R to take Age, Weight and PosCategory in
+the context of **mlb**.
 
 ![alt text](https://raw.githubusercontent.com/matloff/fasteR/master/inst/images/WtAgePosBase.png)
 
@@ -2524,11 +2587,11 @@ lapply(someList,someFunction)
 ```
 
 This calls **someFunction** on each element of **someList**, placing the
-results in a new list that is the return value.
+return values in a new list.
 
 How might be use that here?  As noted before, programming is a creative
 process, and solutions may not come immediately.  The following solution
-is nature to experienced R coders, but you may find that it "came out of
+is natural to experienced R coders, but you may find that it "came out of
 the blue," of unclear provenance.
 
 ``` r
@@ -2614,7 +2677,7 @@ age
 
 The R **apply** family includes other functions as well,  They are quite
 useful, but don't use them solely for the sake of avoiding writing a loop.
-Simpler may not be easier.
+More compact code may not be easier.
 
 ## <a name="txt"> </a> Lesson 23:  Simple Text Processing, I
 
@@ -2720,10 +2783,12 @@ Yep, that's the split form of line 6.
 
 The material beginning with the # sign is what is called a *comment* in
 the programming world.  It does not get executed by R, but it is a memo
-to us, the programmer, a note to help us remember what we did.  When we
-read our code six months from now, we will have forgotten most of it, so
-comments help us reorient.  The same holds if someone else reads our
-code.  Comments -- *meaninful* comments -- are key to good coding.
+to us, the programmer, a note to help us remember what we did.  
+
+Comments are extremely important.  When we read our code six months from
+now, we will have forgotten most of it, so comments help us reorient.
+The same holds if someone else reads our code.  Comments -- *meaninful*
+comments -- are key to good coding.  More on this in a future lesson.
 
 But we also see another snag.  The above output tells us that R took
 line 6, which has 11 words, and split into 14 words -- the first 3 of
@@ -2743,8 +2808,16 @@ So, how to fix it?  For that particular line, we could do, say,
 [11] "graphics."  
 ```
 
-R's '!=' means "not equal to."  So what we did to **z** above followed
-our usual pattern: 
+R's '!=' means "not equal to."  By the way, '!' means "not" in R, e.g.
+
+``` r
+> 3 < 8
+[1] TRUE
+> !(3 < 8)
+[1] FALSE
+```
+
+So what we did to **z** above followed our usual pattern: 
 
 1.  The expression **z != ""** yields a bunch of TRUEs and FALSEs.
 
@@ -2898,11 +2971,550 @@ fancier, Reduce()
 
 ## <a name="linreg2"> </a> Lesson 25:  Linear Regression Analysis, II
 
+Continuing our look at linear regression analysis using R, let's look at
+the famous [bike sharing
+data](ttps://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset).
+(See the latter site for the documentation; e.g. temperature has been
+scaled, rather than measured in degrees.)
+It's in a **.zip** file, so it will need a little extra preprocessing:
+
+``` r
+# fetch from Web, and store the downloaded data to the file 'bike.sip'
+> download.file('https://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip','bike.zip')
+> unzip('bike.zip')  # out come the files 'day.csv' and 'hour.csv'
+> day <- read.csv('day.csv',header=TRUE)
+> head(day)  # always take a look around!
+  instant     dteday season yr mnth holiday weekday workingday weathersit
+1       1 2011-01-01      1  0    1       0       6          0          2
+2       2 2011-01-02      1  0    1       0       0          0          2
+3       3 2011-01-03      1  0    1       0       1          1          1
+4       4 2011-01-04      1  0    1       0       2          1          1
+5       5 2011-01-05      1  0    1       0       3          1          1
+6       6 2011-01-06      1  0    1       0       4          1          1
+      temp    atemp      hum windspeed casual registered  cnt
+1 0.344167 0.363625 0.805833 0.1604460    331        654  985
+2 0.363478 0.353739 0.696087 0.2485390    131        670  801
+3 0.196364 0.189405 0.437273 0.2483090    120       1229 1349
+4 0.200000 0.212122 0.590435 0.1602960    108       1454 1562
+5 0.226957 0.229270 0.436957 0.1869000     82       1518 1600
+6 0.204348 0.233209 0.518261 0.0895652     88       1518 1606
+```
+
+By the way, the weather variables have been rescaled to the interval
+[0,1].  A value of 0.28, for instance, means 28% of the way from the
+minimum to the maximum value of this variable.
+
+One new concept here is the presence of *indicator* variables, more
+informally known as *dummy variables*.  These are variables taking only
+the values 0 and 1, with a 1 "indicating" that some trait is present.
+For instance, the **holiday** variable is either 1 or 0, depending on
+whether that day was a holiday (which might affect the demand for bikes
+that day).
+
+Those who manage this bike sharing service may wish to predict future
+demand for bikes, say the next day, to aid in their planning.  As an
+example, let's try to predict the number of casual riders from some
+weather variables and the dummy variable **workingday**.
+
+``` r
+> day1 <- day[,c(8,10,12:14)]
+> head(day1)
+  workingday     temp      hum windspeed casual
+1          0 0.344167 0.805833 0.1604460    331
+2          0 0.363478 0.696087 0.2485390    131
+3          1 0.196364 0.437273 0.2483090    120
+4          1 0.200000 0.590435 0.1602960    108
+5          1 0.226957 0.436957 0.1869000     82
+6          1 0.204348 0.518261 0.0895652     88
+> lmout <- lm(casual ~ .,data=day1)
+> lmout
+...
+Coefficients:
+(Intercept)   workingday         temp          hum    windspeed  
+     1063.6       -806.6       2149.5       -812.7      -1145.3  
+ 
+```
+
+The expression "casual ~ ." means, "regress **casual** against all the
+other variables in this dataset.
+
+These numbers make sense.  The negative coefficient for **workingday**
+says that, all else equal, there tend to be fewer casual riders on a
+work day. 
+
+By the way, we probably should expect fewer riders on very
+cold or very hot days, so we may wish to add a quadratic term to the
+model, say by doing
+
+``` r
+day1$temp2 <- temp^2  # the caret symbol means exponentiation, i.e. 2nd power here
+```
+
+This would add the indicated column to **day1**.  But we will not pursue
+this for now.
+
+One of the very important features of R is *generic functions*.  These
+are functions that take on different roles for objects of different
+classes.  One such example is the **plot** function we saw earlier.
+
+Try typing "plot(lmout)" at the R prompt.  You will be shown several
+plots desribing the fitted regression model.  What happened was that the
+function **plot** is just a placeholder.  When we type "plot(lmout)" R
+says, "Hmm, what kind of object is **lmout**?  Oh, it's of class
+**'lm'**.  So I'm going to transfer (*dispatch*) this call to one
+involving a special plot function for that class, **plot.lm**."  This is
+in contrast to our previous calls to **plot**, which were invoked on
+vectors; those calls were dispatched to **plot.default**.
+
+Another generic function is **summary**:
+
+``` r
+> summary(Nile)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  456.0   798.5   893.5   919.4  1032.5  1370.0 
+> summary(lmout)
+...
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1063.55     101.37  10.492  < 2e-16 ***
+workingday   -806.63      33.41 -24.143  < 2e-16 ***
+temp         2149.52      86.32  24.901  < 2e-16 ***
+hum          -812.74     112.98  -7.194 1.57e-12 ***
+windspeed   -1145.31     208.55  -5.492 5.51e-08 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+...
+```
+
+In the first case, the call to **summary**, invoked on a vector, was
+dispatched to **summary.default**, while in the second the transfer was
+to **summary.lm**.  In both cases, whoever it was in the R development
+team who wrote these functions decided what summary information should
+be printed out.
+
+Again, the purpose of this tutorial is to present R, not statistics.
+The interested reader should consult a statistics book regarding
+*p-values* and *confidence intervals.*  The former are show in the last
+column of the above summary.  An approximate 95% confidence interval
+for, say, the population coefficient of humidity is -812.74 plus or
+minus 1.96 times the *standard error*, 112.98.  Note carefully that
+p-values have long been considered to be poor methodology; see 
+the [ASA statement](https://amstat.tandfonline.com/doi/full/10.1080/00031305.2016.1154108).
+
+Another important generic function is **predict**.  Say we want to
+predict **casual** for a work day in which **temp**, **hum** and
+**windspeed** are 0.26, 0.55, 0.18, respectively.
+
+``` r
+> newCase <- data.frame(workingday=1, temp=0.26, hum=0.55, windspeed=0.18)
+> predict(lmout,newCase)
+       1 
+162.6296 
+```
+
+The **predict** function, which here is **predict.lm**, assumes that the
+new cases to be predicted are supplied as a data frame, with the same
+column names as with the original data.
+
+## <a name="dates"> </a> Lesson 26:  Work with the R Date Class
+
+In the bike sharing data, dates were included, in **day$dteday**.  As
+noted, some of those were holidays, indicated in the **holiday** column.
+Let's see how many holidays there were:
+
+``` r
+> hds <- day$dteday[day$holiday == 1]
+> hds
+ [1] 2011-01-17 2011-02-21 2011-04-15 2011-05-30 2011-07-04 2011-09-05
+ [7] 2011-10-10 2011-11-11 2011-11-24 2011-12-26 2012-01-02 2012-01-16
+[13] 2012-02-20 2012-04-16 2012-05-28 2012-07-04 2012-09-03 2012-10-08
+[19] 2012-11-12 2012-11-22 2012-12-25
+```
+
+Once again, let's review how the above code works.  The expression "[day$holiday == 1]" yields a bunch of TRUEs and FALSEs.  Using them as indices in the vecotr **day$dteday** gives us exactly the dates that are holidays. 
+
+We see above that there were 21 holidays during the time period of the
+data.  But we can do more.  First, what kind of object is **hds** above?
+
+``` r
+> class(hds)
+[1] "factor"
+```
+
+Fine, but R has a special class for date data, not surprisingly called
+**'Date'**.  Let's convert to that class:
+
+``` r
+> hd <- as.Date(hds)
+> class(hd)
+[1] "Date"
+> hd
+ [1] "2011-01-17" "2011-02-21" "2011-04-15" "2011-05-30" "2011-07-04"
+ [6] "2011-09-05" "2011-10-10" "2011-11-11" "2011-11-24" "2011-12-26"
+[11] "2012-01-02" "2012-01-16" "2012-02-20" "2012-04-16" "2012-05-28"
+[16] "2012-07-04" "2012-09-03" "2012-10-08" "2012-11-12" "2012-11-22"
+[21] "2012-12-25"
+```
+
+Though it prints out just as before, there are extra properties now, and
+even bettery, in POSIX form:
+
+``` r
+> hp <- as.POSIXlt(hd)
+> hp
+ [1] "2011-01-17 UTC" "2011-02-21 UTC" "2011-04-15 UTC" "2011-05-30 UTC"
+ [5] "2011-07-04 UTC" "2011-09-05 UTC" "2011-10-10 UTC" "2011-11-11 UTC"
+ [9] "2011-11-24 UTC" "2011-12-26 UTC" "2012-01-02 UTC" "2012-01-16 UTC"
+[13] "2012-02-20 UTC" "2012-04-16 UTC" "2012-05-28 UTC" "2012-07-04 UTC"
+[17] "2012-09-03 UTC" "2012-10-08 UTC" "2012-11-12 UTC" "2012-11-22 UTC"
+[21] "2012-12-25 UTC"
+> hp[16]$wday  # what day of the week was July 4, 2012?
+[1] 3
+# ah, Wednesday (code 3)
+```
+
+(The UTC parts are the times of day, which we had not supplied.)
+
+There are many operations that can be done on R dates.  The above is
+just a little sample.
+
+## <a name="style"> </a> Tips on R Coding Style and Strategy
+
+Programming is a creative activity, and thus different programmers will
+have different coding styles.  Some people feel so strongly that they
+will publish there own particular style guides, such as 
+[this one](https://google.github.io/styleguide/Rguide.xml) 
+by the R community at Google.
+
+Needless to say, style is a matter of personal taste.  But:
+
+**Style IS important for any code you intend to use again, for two reasons:**
+
+1. You will quickly forget how your code works.
+
+2.  If you share your code with others, you need to make its workings
+    clear to them.
+
+**Equally important is strategy, the way you approach a coding project.**
+
+There is no magic formula on how to write code.  As noted earlier, I
+cannot *teach* yow how to code.  I can only show you how the
+ingredients work -- loops, variables, functions, if/else etc. -- and you
+must creatively put them together into code that achieves goals.  It's
+like solving a big puzzle, and like many big puzzles, you may need to
+ponder the problem for quite a while, gaining insights here and there
+until it's finally done.  Yet, as with coding style, there are strategies
+that we all agree on.
+
+So in spite of great individual variation, there are common aspects that
+everyone agrees with, which we'll discuss in this lesson.
+
+**Comment your code:**
+
+In any programming course for Computer Science students, this
+is absolutely central.  If a student turns in a programming assignment
+with few or no comments, it will get a failing grade.  If comments are
+needed for clarity and readability for CS students, who are presumably
+strong programmers, then R users who are not expert programmers need
+comments even more.
+
+A [style
+guide](https://www.cs.utah.edu/~germain/PPS/Topics/commenting.html)
+at a top university computer science department puts it well:
+
+> Commenting involves placing Human Readable Descriptions inside of
+> computer programs detailing what the Code is doing. Proper use of
+> commenting can make code maintenance much easier, as well as helping
+> make finding bugs faster. Further, commenting is very important when
+> writing functions that other people will use. Remember, well
+> documented code is as important as correctly working code.
+
+(Also see specific tips on commenting, later in that document.)
+
+*Don't be under the illusion that your code is self-documenting; it
+  isn't!  A typical comment might look like this:*
+
+``` r
+w <- f(w)
+# at this point, the data frame w will consist of the original rows for
+# people over age 65 and who are homeowners
+```
+
+*At the top of each source file, insert comments giving the reader n
+overview of the contents.*
+
+This will typically an overview of the roles of each major function, how
+the functions interact with each other, what the main data structures
+are, and so on.
+
+I strongly recommend that you write these comments at the top of a file
+BEFORE you start coding (and of course modifying it as you do write
+code).  This will really help you focus during the coding process.
+
+**Indent your code:**
+
+``` r
+if (x < y) {
+   x <- y^2
+   z <- x + y
+}
+```
+
+is much easier to read than
+
+``` r
+if (x < y) {
+x <- y^2
+z <- x + y
+}
+```
+
+**Write your code in top-down fashion:**
+
+If you have a function **f** that is more than, say, a dozen lines long,
+break its code into calls to smaller functions, say **g** and **h**.
+Then **f** will consist of those calls, plus some "glue" lines to deal
+with the return values and so on.  Of course, it's a matter of taste as
+to break things up that way, but the point is that it makes your code
+both easier to *read* (by others, or by yourself later), and even more
+important, easier to *write*.  Breaking up the code like this makes it
+read like an outline.
+
+**Don't skimp on attending to the "corner cases":**
+
+Computer Science people talk about "corner cases," meaning special
+situations in which code may fail in spite of being generally sound.
+
+For instance, consider this code:
+
+``` r
+> i <- 5
+> 1:i
+[1] 1 2 3 4 5
+```
+
+But what about the special case in which **i = 0**?
+
+``` r
+> i <- 0
+> 1:i
+[1] 1 0
+```
+
+This may not be what you wanted.  You probably should insert a check,
+say
+
+``` r
+if (i >= 1) i:5
+```
+
+and maybe also code to handle the erroneous case.  This will depend on
+the situation, but the main point is to be aware of possible corner
+cases.
+
+**Use a debugging tool:**
+
+More on this in a later lesson!
+
+## <a name="logit"> </a> The Logistic Model
+
+In our earlier examples of regression analysis, we were predicting a
+continuous variable such as human weight.  But what if we wish to
+predict a *dichotomous* varible, i.e. one recording which of two
+outcomes occurs?
+
+Consider the Pima dataset from earlier examples.  Say we are predicting
+whether someone has -- or will later develop -- diabetes.  This is coded
+in the **test** column of the dataset, 1 for having the disease, 0 for
+not.
+
+As a simple example, say we try to predict **test** from the variables
+**bim** and **age**.  A linear model would be
+
+mean test = &beta;<sub>0</sub> + &beta;<sub>1</sub> bmi + &beta;<sub>2</sub> age
+
+Remember, **test** takes on the values 1 and 0.  What happens when we
+take the average of a bunch of 1s and 0s?  The answer is that we get the
+proportion of 1s.  For instance, the mean of the numbers 1,0,1,1 is 3/4,
+which is exactly the proportion of 1s in that data.
+
+In statististical terms, what the above equation is doing is expressing
+the probability of a 1 -- i.e. the probability of having diabetes --
+in terms of Body Mass Index and age.
+
+Not a bad model, but one troubling point is that the right-hand side
+could evaluate to a number less than 0 or greater than 1, which would be
+impossible for a probability.  In order to deal with that problem, we
+might use a *logistic* model, as follows.
+
+Define the logistic function to be 
+
+l(t) = 1 / (1 + e<sup>-t</sup>)
+
+We then modify the above equation to
+
+probability of diabetes = l(&beta;<sub>0</sub> + &beta;<sub>1</sub> bmi + &beta;<sub>2</sub> age)
+
+As before, the statistical details are beyond the scope of this
+R tutorial, but here is how you estimate the coefficients
+&beta;<sub>i</sub> using R:
+
+``` r
+> glout <- glm(test ~ bmi + age, data=pima, family=binomial)
+> summary(glout)
+...
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -5.40378    0.51530 -10.487  < 2e-16 ***
+bmi          0.09825    0.01248   7.874 3.45e-15 ***
+age          0.04561    0.00694   6.571 4.98e-11 ***
+...
+```
+
+Let's explore those estimated &beta;<sub>i</sub> a bit.  Consider 
+women with about average BMI, say 32, and compare 30-year-olds to those
+of age 40.  
+
+``` r
+> l <- function(t) 1 / (1 + exp(-t))
+> l(-5.40378 + 32*0.09825 + 30*0.04561)
+[1] 0.2908045
+> l(-5.40378 + 32*0.09825 + 40*0.04561)
+[1] 0.3928424
+```
+
+So, the risk of diabetes increases substantial over that 10-year period,
+but this population and BMI level.
+
+## <a name="fd"> </a> Files and Directories
+
+In assmebling a dataset for my **regtools** package, I needed to collect
+the records of several of my course offerings.  I started in a directory
+that had one subdirectory for each offering.  In turn, there was a file
+named **Results**.  As an intermediate step, wanted to find all such
+files, placing the text for each one in an R list **gFiles**.  Only some
+specific columns of each file will be retained.  (The discussion here is
+a slightly adapted version.)
+
+The chief R functions I used were:
+
+* **list.dirs():**  Returns a character vector with the names of all the
+  directories (i.e. subdirectories) within the current directory.
+
+* **dir():**  Returns a character vector with the names of all files
+  within the current directory.
+
+* **%in%:**  Determines whether a specified object is an element in a
+  specified vector. 
+
+* **setwd():**  Changes to the specified directory.
+
+Here is the code:
+
+``` r
+getData <- function() {
+
+   currDir <- getwd()  # leave a trail of bread crumbs
+
+   dirs <- list.dirs(recursive=FALSE)
+   numCourseOfferings <- 0
+   # create empty R list, into which we'll store our course records
+   resultsFiles <- list()
+   for (d in dirs) {
+      setwd(d)  # descend into d directory
+      # check if there is a Results file there
+      fls <- dir()
+      if (!('Results' %in% fls)) {  # not there, skip this dir
+         setwd(currDir)
+         next
+      }
+      # ah, there is such a file; increment our count
+      numCourseOfferings <- numCourseOfferings + 1
+      # open it
+      resultsLines <- readLines('Results')
+      # delete the comment lines; look at 1st character in each line
+      resultsLines <- delComments(resultsLines)
+      resultsFiles[[numCourseOfferings]] <- extractCols(resultsLines)
+      setwd(currDir)
+   }
+   resultsFiles  # return all the grades records
+}
+```
+
+Before we go into the details, note the following:
+
+* The code is written in a top-down manner.  Much of the work of
+**getData()** is offloaded to other functions (code not shown),
+**delComments()** and **extractCols()**.
+
+* There are lots of comments!
+
+Now, consider the line
+
+``` r
+   dirs <- list.dirs(recursive=FALSE)
+```
+
+As mentioned, **list.dirs()** will determine all the subdirectories
+within the current directory.  But what about subdirectories of
+subdirectories, and subdirectories of subdirectories of subdirectories,
+and so on?  Setting **recursive** to FALSE means we want only
+first-level subdirectories.
+
+So, the line
+
+``` r
+   for (d in dirs) {
+```
+
+will then have us process each (first-level) directory, one by one.
+
+When we enter one of those subdirectories, the line
+
+``` r
+      fls <- dir()
+```
+
+will determine all the files there, storing the result as a character
+vector **fls**.
+
+Then, as the comment notes, the lines
+
+``` r
+      if (!('Results' %in% fls)) {  # not there, skip this dir
+         setwd(currDir)
+         next
+      }
+```
+
+will, in the event that there is no **Results** file in this
+subdirectory, skip this subdirectory.  The R keyword **next** says, "Go
+to the next iteration of this loop," which here means to process the
+next subdirectory.  Note that to prepare for that, we need to move back
+to the original directory:
+
+``` r
+         setwd(currDir)
+```
+
+On the other hand, if this subdirectory *does* contain a file named
+**Results**, the remaining code increments our count of such files,
+reads in the found file, and assigns its contents as a new element of
+our **resultsFiles** list.
+
 ## <a name="forMore"> </a> To Learn More 
 
 These are books and other resources that I myself consult a lot (yes, I
 do consult my own books; can't keep it all in my head :-) ), plus others
 I recommend.
+
+**Nonprogramming Coverage of R**
+
+* Andrie de Vries and Joris Meys, *R For Dummies* (second edition), For
+  Dummies
+
+* Jaren Lander,  *R for Everyone: Advanced Analytics and Graphics*
+  (second ed.), Addison-Wesley
 
 **R Programming and Language**
 
@@ -2985,3 +3597,19 @@ I also would recommend various Web tutorials:
 
 * Hadley Wickham, 
 [the Tidyverse](https://www.tidyverse.org) 
+
+**LICENSING**
+
+The document is covered by a [Creative
+Commons](http://creativecommons.org/licenses/by-nd/3.0/us/) license,
+Creative Commons Attribution-No Derivative Works 3.0 United States 
+![alt text](http://i.creativecommons.org/l/by-nd/3.0/us/88x31.png).  I have
+written the document to be *used*, so readers, teachers and so on are
+very welcome and encouraged to copy it verbatim.  Copyright is retained
+by N. Matloff in all non-U.S. jurisdictions, but permission to use these
+materials in teaching is still granted, provided the authorship and
+licensing information here is displayed.  I would appreciate being
+notified if you use this book for teaching, just so that I know the
+materials are being put to use, but this is not required.  information
+displayed.  
+
